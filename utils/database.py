@@ -21,6 +21,19 @@ class Database:
         except sqlite3.Error as Error:
             print("Ошибка при создании:", Error)
 
+    def add_user(self, user_name, user_cabinet, telegram_id):
+        self.cursor.execute(
+            f"INSERT INTO USERS (user_name, user_cabinet, telegram_id) VALUES (?,?,?)",
+            (user_name, user_cabinet, telegram_id),
+        )
+        self.connection.commit()
+
+    def select_user_id(self, telegram_id):
+        users = self.cursor.execute(
+            "SELECT * FROM USERS where telegram_id = ?", (telegram_id,)
+        )
+        return users.fetchone()
+
     def __del__(self):
         self.cursor.close()
         self.connection.close()

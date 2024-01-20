@@ -1,11 +1,23 @@
 from aiogram import Bot
 from aiogram.types import Message
 from keyboards.register_kb import register_keyboard
+from keyboards.profile_kb import profile_kb
+from utils.database import Database
+import os
 
 
 async def get_start(message: Message, bot: Bot):
-    await bot.send_message(
-        message.from_user.id,
-        f"Здравствуйте, в этом боте вы сможете оставить заявку для системного администратора. ",
-        reply_markup=register_keyboard,
-    )
+    db = Database(os.getenv("DATABASE_NAME"))
+    users = db.select_user_id(message.from_user.id)
+    if users:
+        await bot.send_message(
+            message.from_user.id,
+            f"Здравствуйте {users[1]}!",
+            reply_markup=profile_kb,
+        )
+    else:
+        await bot.send_message(
+            message.from_user.id,
+            f"Здравствуйте, в этом боте вы сможете оставить заявку для системного администратора. ",
+            reply_markup=register_keyboard,
+        )
